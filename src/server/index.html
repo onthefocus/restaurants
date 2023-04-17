@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <title>Webpage Skeleton</title>
+</head>
+
+<body class="bg-gray-100">
+    <!-- Success Indicator -->
+    <div id="success-modal" class="fixed z-10 hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md">
+            <span class="text-green-500">✓ Value Recorded Successfully</span>
+        </div>
+    </div>
+
+    <div class="container mx-auto py-10">
+        <div class="bg-white rounded-lg p-6 shadow-md">
+            <!-- First Part -->
+            <div class="mb-6">
+                <div class="mb-2">
+                    <p class="font-semibold">Network name:</p>
+                    <span id="network-name" class="font-medium">Hesburger</span>
+                </div>
+                <div>
+                    <p class="font-semibold">Location:</p>
+                    <span id="location" class="font-medium">Ukmerges Street</span>
+                </div>
+            </div>
+            <p class="text-left font-semibold mb-4">Devices</p>
+            <div class="flex justify-between mt-6">
+                <button id="add-modal" class="bg-blue-500 text-white px-4 py-2 rounded">Add new Device</button>
+                <button id="remove-modal" class="bg-red-500 text-white px-4 py-2 rounded">Remove Device</button>
+            </div>
+            <br></br>
+            <hr class="border-gray-300 mb-6">
+
+            <!-- Second Part: Multi Modal -->
+            <div class="space-y-6">
+                <!-- Device Modal -->
+                <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+                    <div class="flex justify-between mb-4">
+                        <div>
+                            <p class="font-semibold">Location Name:</p>
+                            <span class="font-medium">Top Kitchen</span>
+                        </div>
+                        <div>
+                            <label for="time" class="font-semibold">Time:</label>
+                            <input id="time" type="text" class="border border-gray-300 rounded p-2">
+
+                        </div>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <div>
+                            <p class="font-semibold">Last Replacement:</p>
+                            <span id="last-replacement" class="font-medium">04-12 12:00</span>
+                        </div>
+                        <div>
+                            <label for="value" class="font-semibold">Value:</label>
+                            <input id="value" type="text" class="border border-gray-300 rounded p-2">
+                        </div>
+                    </div>
+                    <div class="flex justify-between mb-4">
+                        <button id="replace" class="bg-blue-500 text-white px-4 py-2 rounded">Replace</button>
+                        <button id="record" class="bg-green-500 text-white px-4 py-2 rounded">Record</button>
+                    </div>
+
+                </div>
+                <!-- /Device Modal -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function handleReplaceButtonClick(button) {
+                button.addEventListener('click', () => {
+                    const replacementDate = button.closest('.bg-gray-100').querySelector('#last-replacement');
+                    const date = new Date();
+                    const options = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
+                    const formattedDate = new Intl.DateTimeFormat(navigator.language, options).format(date);
+
+                    const dateParts = formattedDate.match(/\d+/g);
+                    const [day, month, hour, minute] = dateParts;
+                    const currentDate = `${month}-${day} ${hour}:${minute}`;
+
+                    replacementDate.textContent = currentDate;
+                    const valueInput = button.closest('.bg-gray-100').querySelector('#value');
+                    valueInput.value = '';
+                    const timeInput = button.closest('.bg-gray-100').querySelector('#time');
+                    timeInput.value = `${hour}:${minute}`;
+
+                    showSuccessIndicator();
+                });
+            }
+
+
+            replaceButtons.forEach((button) => {
+                const parentModal = button.closest('.bg-gray-100');
+                const modalId = parentModal.id;
+                const networkNameElement = document.querySelector('#network-name');
+                const locationElement = document.querySelector('#location');
+                const locationNameElement = parentModal.querySelector('.font-medium');
+                const lastReplacementElement = parentModal.querySelector('#last-replacement');
+                const timeInput = parentModal.querySelector('#time');
+                const valueInput = parentModal.querySelector('#value');
+                saveRecord(networkNameElement.textContent, locationElement.textContent, locationNameElement.textContent, lastReplacementElement.textContent, timeInput.value, valueInput.value, modalId);
+
+                handleReplaceButtonClick(button); // <--- add this line
+            });
+
+
+            const recordButtons = document.querySelectorAll('#record');
+            recordButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const modalId = button.closest('.bg-gray-100').id;
+                    const parentModal = document.getElementById(modalId);
+                    const networkNameElement = document.querySelector('#network-name');
+                    const locationElement = document.querySelector('#location');
+                    const locationNameElement = parentModal.querySelector('.font-medium');
+                    const lastReplacementElement = parentModal.querySelector('#last-replacement');
+                    const timeInput = parentModal.querySelector('#time');
+                    const valueInput = parentModal.querySelector('#value');
+                    saveRecord(networkNameElement.textContent, locationElement.textContent, locationNameElement.textContent, lastReplacementElement.textContent, timeInput.value, valueInput.value, modalId);
+                    showSuccessIndicator();
+                });
+            });
+
+
+            const addModalButton = document.querySelector('#add-modal');
+            const removeModalButton = document.querySelector('#remove-modal');
+            const modalContainer = document.querySelector('.space-y-6');
+
+            addModalButton.addEventListener('click', async () => {
+                const newModal = document.querySelector('.space-y-6 > div').cloneNode(true);
+
+                newModal.querySelector('#record').addEventListener('click', () => {
+                    const parentModal = newModal.querySelector('.bg-gray-100');
+                    handleReplaceButtonClick(parentModal.querySelector('#replace'));
+
+                    showSuccessIndicator();
+                });
+
+                modalContainer.appendChild(newModal);
+            });
+
+
+            removeModalButton.addEventListener('click', () => {
+                const modals = modalContainer.querySelectorAll('.space-y-6 > div');
+                if (modals.length > 1) {
+                    modalContainer.removeChild(modals[modals.length - 1]);
+                }
+            });
+
+            function showSuccessIndicator() {
+                const successModal = document.querySelector('#success-modal');
+                successModal.classList.remove('hidden');
+                setTimeout(() => {
+                    successModal.classList.add('hidden');
+                }, 2000);
+            }
+
+            var now = new Date();
+            var hours = now.getHours().toString().padStart(2, '0');
+            var minutes = now.getMinutes().toString().padStart(2, '0');
+            var time = hours + ':' + minutes;
+            document.getElementById('time').value = time;
+        });
+
+        async function saveRecord(networkName, location, locationName, lastReplacement, time, value, modalId) {
+            try {
+                const response = await fetch('http://localhost:3000/api/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ modal_id: modalId, network_name: networkName, location: location, location_name: locationName, last_replacement: lastReplacement, time: time, value: value }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(data);
+                // showSuccessIndicator();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+
+            // Update the modal counter
+            const modalCounterResponse = await fetch('http://localhost:3000/api/getModalCounter');
+            const modalCounterData = await modalCounterResponse.json();
+            const modalCounter = modalCounterData || 0;
+            const modalCounterElements = document.querySelectorAll('.modal-counter');
+            modalCounterElements.forEach((element) => {
+                element.textContent = modalCounter;
+            });
+        }
+
+
+
+
+
+        // Get the current time
+        var now = new Date();
+
+        // Format the time as HH:mm
+        var hours = now.getHours().toString().padStart(2, '0');
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var time = hours + ':' + minutes;
+
+        // Set the input value to the current time
+        document.getElementById('time').value = time;
+
+
+    </script>
+
+</body>
+
+</html>
