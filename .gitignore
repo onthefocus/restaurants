@@ -3,3 +3,5 @@
 /.vscode
 /.vs
 db.sqlite
+server.js
+index.html
