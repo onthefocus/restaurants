@@ -38,170 +38,105 @@
             <hr class="border-gray-300 mb-6">
 
             <!-- Second Part: Multi Modal -->
-            <div class="space-y-6">
-                <!-- Device Modal -->
-                <div class="bg-gray-100 rounded-lg p-6 shadow-md">
-                    <div class="flex justify-between mb-4">
-                        <div>
-                            <p class="font-semibold">Location Name:</p>
-                            <span class="font-medium">Top Kitchen</span>
-                        </div>
-                        <div>
-                            <label for="time" class="font-semibold">Time:</label>
-                            <input id="time" type="text" class="border border-gray-300 rounded p-2">
+            <template id="device-modal-template">
+                <div class="space-y-6">
+                    <!-- Device Modal -->
+                    <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <p class="font-semibold">Location Name:</p>
+                                <input id="location-name" type="text" class="border border-gray-300 rounded p-2"
+                                    value="">
+                            </div>
+                            <div>
+                                <label for="time" class="font-semibold">Time:</label>
+                                <input id="time" type="text" class="border border-gray-300 rounded p-2">
 
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex justify-between mb-4">
-                        <div>
-                            <p class="font-semibold">Last Replacement:</p>
-                            <span id="last-replacement" class="font-medium">04-12 12:00</span>
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <p class="font-semibold">Last Replacement:</p>
+                                <span id="last-replacement" class="font-medium">04-12 12:00</span>
+                            </div>
+                            <div>
+                                <label for="value" class="font-semibold">Value:</label>
+                                <input id="value" type="text" class="border border-gray-300 rounded p-2">
+                            </div>
                         </div>
-                        <div>
-                            <label for="value" class="font-semibold">Value:</label>
-                            <input id="value" type="text" class="border border-gray-300 rounded p-2">
+                        <div class="flex justify-between mb-4">
+                            <button id="replace" class="bg-blue-500 text-white px-4 py-2 rounded">Replace</button>
+                            <button id="record" class="bg-green-500 text-white px-4 py-2 rounded">Record</button>
                         </div>
-                    </div>
-                    <div class="flex justify-between mb-4">
-                        <button id="replace" class="bg-blue-500 text-white px-4 py-2 rounded">Replace</button>
-                        <button id="record" class="bg-green-500 text-white px-4 py-2 rounded">Record</button>
-                    </div>
 
+                    </div>
+                    <!-- /Device Modal -->
                 </div>
-                <!-- /Device Modal -->
-            </div>
+            </template>
         </div>
     </div>
 
     <script>
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     function handleReplaceButtonClick(button) {
-        //         button.addEventListener('click', () => {
-        //             const parentModal = button.closest('.bg-gray-100');
-        //             const replacementDate = parentModal.querySelector('#last-replacement');
-        //             const date = new Date();
-        //             const options = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false };
-        //             const formattedDate = new Intl.DateTimeFormat(navigator.language, options).format(date);
-
-        //             const dateParts = formattedDate.match(/\d+/g);
-        //             const [day, month, hour, minute] = dateParts;
-        //             const currentDate = `${month}-${day} ${hour}:${minute}`;
-
-        //             replacementDate.textContent = currentDate;
-        //             const valueInput = parentModal.querySelector('#value');
-        //             valueInput.value = '';
-        //             const timeInput = parentModal.querySelector('#time');
-        //             timeInput.value = `${hour}:${minute}`;
-
-        //             showSuccessIndicator();
-        //         });
-        //     }
-
-        //     const replaceButtons = document.querySelectorAll('#replace');
-        //     replaceButtons.forEach((button) => {
-        //         const networkNameElement = document.querySelector('#network-name');
-        //         const locationElement = document.querySelector('#location');
-        //         const parentModal = button.closest('.bg-gray-100');
-        //         const locationNameElement = parentModal.querySelector('.font-medium');
-        //         const lastReplacementElement = parentModal.querySelector('#last-replacement');
-        //         const timeInput = parentModal.querySelector('#time');
-        //         const valueInput = parentModal.querySelector('#value');
-        //         saveRecord(networkNameElement.textContent, locationElement.textContent, locationNameElement.textContent, lastReplacementElement.textContent, timeInput.value, valueInput.value);
-
-        //         handleReplaceButtonClick(button);
-        //     });
-
-        //     const recordButtons = document.querySelectorAll('#record');
-        //     recordButtons.forEach((button) => {
-        //         button.addEventListener('click', () => {
-        //             const networkNameElement = document.querySelector('#network-name');
-        //             const locationElement = document.querySelector('#location');
-        //             const parentModal = button.closest('.bg-gray-100');
-        //             const locationNameElement = parentModal.querySelector('.font-medium');
-        //             const lastReplacementElement = parentModal.querySelector('#last-replacement');
-        //             const timeInput = parentModal.querySelector('#time');
-        //             const valueInput = parentModal.querySelector('#value');
-        //             saveRecord(networkNameElement.textContent, locationElement.textContent, locationNameElement.textContent, lastReplacementElement.textContent, timeInput.value, valueInput.value);
-
-        //             showSuccessIndicator();
-        //         });
-        //     });
-
-        //     const addModalButton = document.querySelector('#add-modal');
-        //     const removeModalButton = document.querySelector('#remove-modal');
-        //     const modalContainer = document.querySelector('.space-y-6');
-
-        //     addModalButton.addEventListener('click', () => {
-        //         const newModal = document.querySelector('.space-y-6 > div').cloneNode(true);
-
-        //         newModal.querySelectorAll('#replace').forEach((button) => {
-        //             handleReplaceButtonClick(button);
-        //         });
-
-        //         newModal.querySelector('#record').addEventListener('click', () => {
-        //             showSuccessIndicator();
-        //         });
-
-        //         modalContainer.appendChild(newModal);
-        //     });
-
-        //     removeModalButton.addEventListener('click', () => {
-        //         const modals = modalContainer.querySelectorAll('.space-y-6 > div');
-        //         if (modals.length > 1) {
-        //             modalContainer.removeChild(modals[modals.length - 1]);
-        //         }
-        //     });
-
-        //     function showSuccessIndicator() {
-        //         const successModal = document.querySelector('#success-modal');
-        //         successModal.classList.remove('hidden');
-        //         setTimeout(() => {
-        //             successModal.classList.add('hidden');
-        //         }, 2000);
-        //     }
-
-        //     var now = new Date();
-        //     var hours = now.getHours().toString().padStart(2, '0');
-        //     var minutes = now.getMinutes().toString().padStart(2, '0');
-        //     var time = hours + ':' + minutes;
-        //     document.getElementById('time').value = time;
-        // });
-
-        // async function saveRecord(networkName, location, locationName, lastReplacement, time, value) {
-        //     try {
-        //         const response = await fetch('http://localhost:3000/api/save', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //             },
-        //             body: JSON.stringify({ networkName, location, locationName, lastReplacement, time, value }),
-        //         });
-
-        //         if (!response.ok) {
-        //             throw new Error(`HTTP error! status: ${response.status}`);
-        //         }
-
-        //         const data = await response.json();
-        //         console.log(data);
-        //         // showSuccessIndicator();
-        //     } catch (error) {
-        //         console.error('Error:', error);
-        //     }
-        // }
-
-        // // Get the current time
-        // var now = new Date();
-
-        // // Format the time as HH:mm
-        // var hours = now.getHours().toString().padStart(2, '0');
-        // var minutes = now.getMinutes().toString().padStart(2, '0');
-        // var time = hours + ':' + minutes;
-
-        // // Set the input value to the current time
-        // document.getElementById('time').value = time;
+        // Function to get the current date and time
+  function getDateTime() {
+    const now = new Date();
+    const date = now.toLocaleDateString('en-US');
+    const time = now.toLocaleTimeString('en-US', { hour12: false });
+    return `${date} ${time}`;
+  }
 
 
-    </script>
+  // Function to add a new device
+  document.getElementById('add-modal').addEventListener('click', function () {
+    const template = document.getElementById('device-modal-template');
+    const clone = template.content.cloneNode(true);
+    const container = document.querySelector('.container .bg-white');
+    container.appendChild(clone);
+
+    // Set the current date and time as the placeholder for the Time field
+    const timeInput = container.lastElementChild.querySelector('#time');
+    timeInput.placeholder = getDateTime();
+
+    // Set the Last Replacement date when the Replace button is clicked
+    container.lastElementChild.querySelector('#replace').addEventListener('click', function () {
+      const lastReplacement = this.parentElement.parentElement.querySelector('#last-replacement');
+      lastReplacement.textContent = getDateTime();
+    });
+
+    // Save the new device to localStorage
+  });
+
+  // Function to remove the last created device
+  document.getElementById('remove-modal').addEventListener('click', function () {
+    const container = document.querySelector('.container .bg-white');
+    const lastChild = container.lastElementChild;
+
+    if (lastChild && lastChild.matches('.space-y-6')) {
+      container.removeChild(lastChild);
+    }
+  });
+      
+      
+  async function fetchDevices(restaurantId) {
+    const response = await fetch('http://api.restaurants.provocati.lt/api/devices');
+    const devices = await response.json();
+
+    const filteredDevices = devices.filter(device => device.restaurant_id === restaurantId);
+
+    filteredDevices.forEach(device => {
+      // Add a new device
+      document.getElementById('add-modal').click();
+
+      // Set the name of the newly added device
+      const container = document.querySelector('.container .bg-white');
+      const deviceElement = container.lastElementChild;
+      deviceElement.querySelector('#location-name').value = device.name;
+    });
+  }
+  fetchDevices(1)
+      
+      </script>
+      
 
 </body>
 

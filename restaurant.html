@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <title>Restaurant Page</title>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto py-10">
+      <div class="bg-white rounded-lg p-6 shadow-md">
+        <h1 class="text-xl font-semibold mb-4">Available Restaurants</h1>
+        <ul id="restaurant-list" class="list-disc pl-6">
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      // Function to get the query string parameter value
+      function getParameterByName(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // Get the network ID from the query string
+      const networkId = getParameterByName('networkId');
+
+      // Fetch the restaurants data
+      fetch('http://api.restaurants.provocati.lt/api/restaurants')
+        .then(response => response.json())
+        .then(data => {
+          // Get the list element
+          const restaurantList = document.getElementById('restaurant-list');
+
+          // Loop through the data and add each restaurant to the list if the network_id matches
+          data.forEach(restaurant => {
+        if (restaurant.network_id === parseInt(networkId)) {
+          const listItem = document.createElement('li');
+          const link = document.createElement('a');
+          link.textContent = restaurant.name;
+          link.href = `details.html?restaurantId=${restaurant.id}`; // Add restaurant ID to the link
+          listItem.appendChild(link);
+          restaurantList.appendChild(listItem);
+        }
+      });
+        })
+        .catch(error => console.error(error));
+    </script>
+  </body>
+</html>

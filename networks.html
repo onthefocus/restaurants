@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet" />
+    <title>Webpage Skeleton</title>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto py-10">
+        <div class="bg-white rounded-lg p-6 shadow-md">
+            <h1 class="text-xl font-semibold mb-4">Available Networks</h1>
+            <ul id="network-list" class="list-disc pl-6">
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // make a request to the API endpoint
+        fetch('http://api.restaurants.provocati.lt/api/networks')
+            .then(response => response.json())
+            .then(data => {
+                // get the list element
+                const networkList = document.getElementById('network-list');
+
+                // loop through the data and add each network to the list
+                data.forEach(network => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.textContent = network.name;
+                    link.href = `restaurant.html?networkId=${network.id}`; // Change to restaurant.html and pass networkId
+                    listItem.appendChild(link);
+                    networkList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+</body>
+
+</html>
