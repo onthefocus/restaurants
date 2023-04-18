@@ -1,7 +1,7 @@
 /node_modules
 /dist
-/.vscode
-/.vs
+.vs/
+.vscode/
 db.sqlite
 server.js
 index.html
