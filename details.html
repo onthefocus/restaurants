@@ -15,6 +15,16 @@
             <span class="text-green-500">✓ Value Recorded Successfully</span>
         </div>
     </div>
+    <div id="remove-device-modal"
+        class="fixed z-10 hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md">
+            <h2 class="text-xl font-bold mb-4">Remove Device</h2>
+            <ul id="remove-device-list" class="space-y-2 mb-4">
+                <!-- Device list items will be added dynamically -->
+            </ul>
+            <button id="close-remove-modal" class="bg-red-500 text-white px-4 py-2 rounded">Close</button>
+        </div>
+    </div>
 
     <div class="container mx-auto py-10">
         <div class="bg-white rounded-lg p-6 shadow-md">
@@ -122,7 +132,6 @@
             return `${date} ${time}`;
         }
 
-
         document.getElementById('add-modal').addEventListener('click', function (event) {
             const isNew = event && event.detail;
 
@@ -172,7 +181,6 @@
                 const value = this.parentElement.parentElement.querySelector('#value').value;
                 const time = this.parentElement.parentElement.querySelector('#time').value;
 
-
                 if (value && time) {
                     // Send a GET request to record the value
                     fetch(`http://api.restaurants.provocati.lt/api/devices/${deviceId}/value/${value}`, {
@@ -202,7 +210,8 @@
                 saveButton.id = 'save';
                 saveButton.innerText = 'Save';
                 saveButton.classList.add('bg-green-500', 'text-white', 'px-4', 'py-2', 'rounded', 'ml-2');
-                saveButton.addEventListener('click', function () {
+                saveButton.addEventListener('click', async function () {
+                    updateRemoveDeviceList();
                     const locationName = container.lastElementChild.querySelector('#location-name').value;
 
                     fetch('http://api.restaurants.provocati.lt/api/devices', {
@@ -217,15 +226,22 @@
                     })
                         .then(response => {
                             if (response.ok) {
-                                const successModal = document.getElementById('success-modal');
-                                successModal.classList.remove('hidden');
-                                setTimeout(() => successModal.classList.add('hidden'), 2000);
-
-                                // Hide the "Save" button
-                                saveButton.style.display = 'none';
+                                return response.json(); // Add this line to get the JSON response
                             } else {
                                 throw new Error('Failed to add device');
                             }
+                        })
+                        .then(device => { // Add this block to handle the JSON response
+                            const successModal = document.getElementById('success-modal');
+                            successModal.classList.remove('hidden');
+                            setTimeout(() => successModal.classList.add('hidden'), 2000);
+
+                            // Hide the "Save" button
+                            saveButton.style.display = 'none';
+
+                            const deviceElement = this.closest('.space-y-6');
+                            // Update the data-device-id attribute with the new device ID
+                            deviceElement.setAttribute('data-device-id', device.id);
                         })
                         .catch(error => console.error(error));
                 });
@@ -235,15 +251,7 @@
             }
         });
 
-        // Function to remove the last created device
-        document.getElementById('remove-modal').addEventListener('click', function () {
-            const container = document.querySelector('.container .bg-white');
-            const lastChild = container.lastElementChild;
-
-            if (lastChild && lastChild.matches('.space-y-6')) {
-                container.removeChild(lastChild);
-            }
-        });
+        updateRemoveDeviceList();
 
         async function fetchDevices(restaurantId) {
             const response = await fetch('http://api.restaurants.provocati.lt/api/devices');
@@ -267,38 +275,118 @@
                 deviceElement.setAttribute('data-device-id', deviceId);
 
                 getLastReplacementDate(deviceId)
-            .then(date => {
-                if (date) {
-                    deviceElement.querySelector('#last-replacement').textContent = date;
-                }
-            })
-            .catch(error => console.error(error));
+                    .then(date => {
+                        if (date) {
+                            deviceElement.querySelector('#last-replacement').textContent = date;
+                        }
+                    })
+                    .catch(error => console.error(error));
             });
         }
 
         fetchDevices(restaurantId);
 
         async function getLastReplacementDate(deviceId) {
-    const response = await fetch(`http://api.restaurants.provocati.lt/api/devices/${deviceId}`);
-    const deviceData = await response.json();
+            const response = await fetch(`http://api.restaurants.provocati.lt/api/devices/${deviceId}`);
+            const deviceData = await response.json();
 
-    const lastReplacement = deviceData.replacements.slice(-1)[0];
-    if (lastReplacement) {
-        const date = new Date(lastReplacement.updated_at);
-        const options = { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit', 
-            hour: 'numeric', 
-            minute: 'numeric', 
-            second: 'numeric' 
-        };
-        return date.toLocaleString('en-US', options);
-    } else {
-        return null;
-    }
-}
+            const lastReplacement = deviceData.replacements.slice(-1)[0];
+            if (lastReplacement) {
+                const date = new Date(lastReplacement.updated_at);
+                const options = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric'
+                };
+                return date.toLocaleString('en-US', options);
+            } else {
+                return null;
+            }
+        }
 
+        async function updateRemoveDeviceList() {
+            const removeList = document.getElementById('remove-list');
+            removeList.innerHTML = '';
+
+            const devices = await fetchDevices(restaurantId);
+
+            devices.forEach(device => {
+                const deviceItem = document.createElement('div');
+                deviceItem.classList.add('flex', 'justify-between', 'items-center', 'mb-2');
+
+                const deviceName = document.createElement('span');
+                deviceName.textContent = device.name;
+                deviceItem.appendChild(deviceName);
+
+                const removeButton = document.createElement('button');
+                removeButton.classList.add('bg-red-500', 'text-white', 'px-4', 'py-2', 'rounded');
+                removeButton.textContent = 'Remove';
+                removeButton.addEventListener('click', async () => {
+                    await fetch(`http://api.restaurants.provocati.lt/api/devices/${device.id}/delete`, { method: 'GET' });
+
+                   await updateRemoveDeviceList();
+                });
+
+                deviceItem.appendChild(removeButton);
+                removeList.appendChild(deviceItem);
+            });
+
+            // Add this line to ensure the device list is properly updated after deleting the last element
+            return devices;
+        }
+
+        document.getElementById('remove-modal').addEventListener('click', function () {
+            const removeDeviceModal = document.getElementById('remove-device-modal');
+            removeDeviceModal.classList.remove('hidden');
+
+            // Populate the list of devices in the remove device modal
+            const removeDeviceList = document.getElementById('remove-device-list');
+            removeDeviceList.innerHTML = '';
+
+            const deviceElements = document.querySelectorAll('.space-y-6');
+            deviceElements.forEach((deviceElement, index) => {
+                const locationName = deviceElement.querySelector('#location-name').value;
+                const deviceId = deviceElement.getAttribute('data-device-id');
+
+                const listItem = document.createElement('li');
+                listItem.classList.add('flex', 'justify-between', 'items-center');
+
+                const deviceName = document.createElement('span');
+                deviceName.textContent = locationName;
+                listItem.appendChild(deviceName);
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.classList.add('bg-red-500', 'text-white', 'px-4', 'py-2', 'rounded');
+                removeButton.addEventListener('click', async () => {
+                    // Send a GET request to delete the device from the backend
+                    fetch(`http://api.restaurants.provocati.lt/api/devices/${deviceId}/delete`, {
+                        method: 'GET',
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                deviceElement.remove();
+                                listItem.remove();
+                            } else {
+                                throw new Error('Failed to delete device');
+                            }
+                        })
+                        .catch(error => console.error(error));
+                });
+                listItem.appendChild(removeButton);
+
+                removeDeviceList.appendChild(listItem);
+            });
+        });
+
+        // Function to close the remove device modal
+        document.getElementById('close-remove-modal').addEventListener('click', function () {
+            const removeDeviceModal = document.getElementById('remove-device-modal');
+            removeDeviceModal.classList.add('hidden');
+        });
 
     </script>
 </body>
