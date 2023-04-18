@@ -4,5 +4,4 @@
 .vscode/
 db.sqlite
 server.js
-index.html
 /src
