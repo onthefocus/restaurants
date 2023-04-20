@@ -7,7 +7,7 @@
       href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
       rel="stylesheet"
     />
-    <title>Restaurant Page</title>
+    <title>Restaurants List</title>
   </head>
   <body class="bg-gray-100">
     <div class="container mx-auto py-10">
@@ -40,8 +40,9 @@
         if (restaurant.network_id === parseInt(networkId)) {
           const listItem = document.createElement('li');
           const link = document.createElement('a');
+          link.classList.add("text-purple-500");
           link.textContent = restaurant.name;
-          link.href = `details.html?restaurantId=${restaurant.id}`; // Add restaurant ID to the link
+          link.href = `details2.html?restaurantId=${restaurant.id}`; // Add restaurant ID to the link
           listItem.appendChild(link);
           restaurantList.appendChild(listItem);
         }

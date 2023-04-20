@@ -5,13 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet" />
-    <title>Webpage Skeleton</title>
+    <title>Networks List</title>
 </head>
 
 <body class="bg-gray-100">
     <div class="container mx-auto py-10">
-        <div class="bg-white rounded-lg p-6 shadow-md">
-            <h1 class="text-xl font-semibold mb-4">Available Networks</h1>
+        <div class="bg-white rounded-lg p-6 shadow-md mx-6">
+            <h1 class="text-xl font-semibold mb-4">Available Restaurat Networks</h1>
             <ul id="network-list" class="list-disc pl-6">
             </ul>
         </div>
@@ -29,6 +29,7 @@
                 data.forEach(network => {
                     const listItem = document.createElement('li');
                     const link = document.createElement('a');
+                    link.classList.add("text-purple-500");
                     link.textContent = network.name;
                     link.href = `restaurant.html?networkId=${network.id}`; // Change to restaurant.html and pass networkId
                     listItem.appendChild(link);
