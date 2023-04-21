@@ -15,19 +15,25 @@
             <span class="text-green-500">✓ Value Recorded Successfully</span>
         </div>
     </div>
-    <div id="remove-device-modal"
+    <div id="success-modal-replace"
         class="fixed z-10 hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center">
         <div class="bg-white p-6 rounded shadow-md">
-            <h2 class="text-xl font-bold mb-4">Remove Device</h2>
-            <ul id="remove-device-list" class="space-y-2 mb-4">
-                <!-- Device list items will be added dynamically -->
-            </ul>
-            <button id="close-remove-modal" class="bg-red-500 text-white px-4 py-2 rounded">Close</button>
+            <span class="text-green-500">✓ Replacement Successfull</span>
         </div>
     </div>
-
+    <div id="success-modal-remove"
+        class="fixed z-10 hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md">
+            <span class="text-green-500">✓ Device Removed</span>
+        </div>
+    </div>
+    <div id="success-modal-save"
+        class="fixed z-10 hidden inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded shadow-md">
+            <span class="text-green-500">✓ Device Saved</span>
+        </div>
+    </div>
     <div class="container mx-auto py-10">
-
         <div class="bg-white rounded-lg p-6 shadow-md">
             <!-- First Part -->
             <div class="mb-6">
@@ -39,22 +45,19 @@
                 </div>
                 <hr class="border-gray-300 mt-6">
             </div>
-
             <p class="text-left text-xl ">Available Devices</p>
             <div class="flex  mb-4 items-center mt-2">
+                <a id="add-modal" class="items-center text-blue-500 mr-2 cursor-pointer flex"><svg
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-4 h-4 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Add New</a>
 
-                <a id="add-modal" class="items-center text-blue-500 mr-2 cursor-pointer flex"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Add New</a>
-               
             </div>
-
-
-
             <!-- Second Part: Multi Modal -->
-            <template id="device-modal-template">
-
+            <template id="device-modal-template" data-new-device="true">
                 <!-- Device Modal -->
                 <div class="bg-gray-100 rounded-lg p-6 shadow-md my-5">
                     <div class="flex justify-between mb-4">
@@ -62,23 +65,37 @@
                             <span class="font-semibold mr-2">Device Name:</span>
                             <input id="location-name" type="text" class="border border-gray-300 rounded-md p-2"
                                 value="">
-                                <a id="remove-modal" class="text-red-500 cursor-pointer flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                  Remove Device</a>
-                             <div class="flex items-center">  
+                            <button id="save"
+                                class="bg-green-500 text-white px-4 py-2 rounded flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" class="w-4 h-4 mr-2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="inline-block">Save Device</span>
+                            </button>
+                            <a class="text-red-500 cursor-pointer flex items-center remove-modal">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Remove Device
+                            </a>
+                            <div class="flex items-center">
                                 <label class="font-semibold mr-2">Last Replacement:</label>
                                 <div id="last-replacement" class="font-normal">(not replaced)</div>
                             </div>
                             <div>
                                 <button id="replace"
-                                    class="bg-blue-500 text-white rounded-md px-5 py-2 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 -ml-1">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                                      </svg>
-                                      Replace</button>
+                                    class="bg-blue-500 text-white rounded-md px-5 py-2 flex items-center"><svg
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 -ml-1">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                                    </svg>
+                                    Replace</button>
                             </div>
-                            
-                               
                         </div>
                         <div class="flex flex-col space-y-3">
                             <div class="flex justify-between items-center">
@@ -88,26 +105,23 @@
                             <div class="flex justify-between items-center">
                                 <label for="value" class="font-semibold mr-2">Value:</label>
                                 <input id="value" type="text" class="border border-gray-300 rounded-md p-2">
-
                             </div>
                             <div class="">
                                 <div class="flex justify-end">
-                              <button id="record" class="bg-green-500 text-white px-4 py-2 rounded flex items-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />
-                              </svg>
-                              Record Value</button>
-                            </div>
+                                    <button id="record"
+                                        class="bg-green-500 text-white px-4 py-2 rounded flex items-center"><svg
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75A2.25 2.25 0 0116.5 4.5c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 01-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 10.203 4.167 9.75 5 9.75h1.053c.472 0 .745.556.5.96a8.958 8.958 0 00-1.302 4.665c0 1.194.232 2.333.654 3.375z" />
+                                        </svg>
+                                        Record Value</button>
+                                </div>
                             </div>
                         </div>
-
-
-
                     </div>
-
-
                 </div>
                 <!-- /Device Modal -->
-
             </template>
         </div>
     </div>
@@ -156,54 +170,95 @@
             return `${date} ${time}`;
         }
 
-        document.getElementById('add-modal').addEventListener('click', function (event) {
-            const isNew = event && event.detail;
-
+        document.querySelector('#add-modal').addEventListener('click', function () {
             const template = document.getElementById('device-modal-template');
-            const clone = template.content.cloneNode(true);
-            const container = document.querySelector('.container .bg-white');
-            container.appendChild(clone);
+            const container = template.parentElement;
+            container.appendChild(template.content.cloneNode(true));
+
+            container.lastElementChild.setAttribute('data-is-new', 'true');
 
             const timeInput = container.lastElementChild.querySelector('#time');
             timeInput.value = getDateTime();
 
+            const isNewDevice = container.lastElementChild.getAttribute('data-is-new') === 'true';
+            const saveButton = container.lastElementChild.querySelector('#save');
+            if (isNewDevice) {
+                saveButton.classList.remove('hidden'); // Show the save button for new devices
+
+                saveButton.addEventListener('click', function () {
+                    const locationName = container.lastElementChild.querySelector('#location-name').value;
+
+                    fetch('https://api.restaurants.provocati.lt/api/devices', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: locationName,
+                            restaurant_id: restaurantId
+                        })
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error('Failed to add device');
+                            }
+                        })
+                        .then(device => {
+                            const successModal = document.getElementById('success-modal-save');
+                            successModal.classList.remove('hidden');
+                            setTimeout(() => successModal.classList.add('hidden'), 2000);
+
+                            // Hide the save button after successfully saving the device
+                            saveButton.classList.add('hidden');
+
+                            const deviceElement = this.closest('.bg-gray-100');
+                            deviceElement.setAttribute('data-device-id', device.id);
+                            deviceElement.setAttribute('data-is-new', 'false');
+                        })
+                        .catch(error => console.error(error));
+                });
+            } else {
+                saveButton.classList.add('hidden'); // Hide the save button for existing devices
+            }
+
             container.lastElementChild.querySelector('#replace').addEventListener('click', function () {
                 const locationName = container.lastElementChild.querySelector('#location-name').value;
-                const deviceId = this.closest('.space-y-6').getAttribute('data-device-id');
-                // Send a POST request to replace the device with the matching location name
+                const deviceId = this.closest('.bg-gray-100').getAttribute('data-device-id');
+
                 fetch(`https://api.restaurants.provocati.lt/api/devices/${deviceId}/replace`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-
                 })
                     .then(response => {
                         if (response.ok) {
-                            const successModal = document.getElementById('success-modal');
+                            const successModal = document.getElementById('success-modal-replace');
                             successModal.classList.remove('hidden');
                             setTimeout(() => successModal.classList.add('hidden'), 2000);
-
-                            // Hide the "Save" button
-                            const saveButton = this.parentElement.querySelector('#save');
-                            if (saveButton) {
-                                saveButton.style.display = 'none';
-                            }
                         } else {
                             throw new Error('Failed to replace device');
                         }
                     })
                     .catch(error => console.error(error));
 
-                // Update the "Last Replacement" time
                 const lastReplacement = this.parentElement.parentElement.querySelector('#last-replacement');
                 lastReplacement.textContent = getDateTime();
             });
 
+            container.lastElementChild.querySelector('.remove-modal').addEventListener('click', function () {
+                this.closest('.bg-gray-100').remove();
+            });
+
             container.lastElementChild.querySelector('#record').addEventListener('click', function () {
-                const deviceId = this.closest('.space-y-6').getAttribute('data-device-id');
-                const value = this.parentElement.parentElement.querySelector('#value').value;
-                const time = this.parentElement.parentElement.querySelector('#time').value;
+                const deviceModal = this.closest('.bg-gray-100');
+                const deviceId = deviceModal.getAttribute('data-device-id');
+                const valueInput = deviceModal.querySelector('#value');
+                const timeInput = deviceModal.querySelector('#time');
+                const value = valueInput.value;
+                const time = timeInput.value;
 
                 if (value && time) {
                     // Send a GET request to record the value
@@ -227,76 +282,52 @@
                     alert('Please enter both time and value before recording.');
                 }
             });
-
-            if (isNew) {
-                // Add a "Save" button to save the new device to the API
-                const saveButton = document.createElement('button');
-                saveButton.id = 'save';
-                saveButton.innerText = 'Save';
-                saveButton.classList.add('bg-green-500', 'text-white', 'px-4', 'py-2', 'rounded', 'ml-2');
-                saveButton.addEventListener('click', async function () {
-                    updateRemoveDeviceList();
-                    const locationName = container.lastElementChild.querySelector('#location-name').value;
-
-                    fetch('https://api.restaurants.provocati.lt/api/devices', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: locationName,
-                            restaurant_id: restaurantId
-                        })
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                return response.json(); // Add this line to get the JSON response
-                            } else {
-                                throw new Error('Failed to add device');
-                            }
-                        })
-                        .then(device => { // Add this block to handle the JSON response
-                            const successModal = document.getElementById('success-modal');
-                            successModal.classList.remove('hidden');
-                            setTimeout(() => successModal.classList.add('hidden'), 2000);
-
-                            // Hide the "Save" button
-                            saveButton.style.display = 'none';
-
-                            const deviceElement = this.closest('.space-y-6');
-                            // Update the data-device-id attribute with the new device ID
-                            deviceElement.setAttribute('data-device-id', device.id);
-                        })
-                        .catch(error => console.error(error));
-                });
-
-                const locationNameInput = container.lastElementChild.querySelector('#location-name');
-                locationNameInput.insertAdjacentElement('afterend', saveButton);
-            }
         });
 
-        updateRemoveDeviceList();
+        async function removeDevice(deviceId) {
+            try {
+                const response = await fetch(`https://api.restaurants.provocati.lt/api/devices/${deviceId}/delete`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const deviceElement = document.querySelector(`[data-device-id="${deviceId}"]`);
+                    deviceElement.remove();
+
+                    // Display success-modal-remove
+                    const successModal = document.getElementById('success-modal-remove');
+                    successModal.classList.remove('hidden');
+                    setTimeout(() => successModal.classList.add('hidden'), 2000);
+                } else {
+                    throw new Error('Failed to remove device');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
 
         async function fetchDevices(restaurantId) {
             const response = await fetch('https://api.restaurants.provocati.lt/api/devices');
             const devices = await response.json();
-
-
             const filteredDevices = devices.filter(device => device.restaurant_id === restaurantId);
 
             filteredDevices.forEach(device => {
-
-
                 const deviceId = device.id;
                 // Add a new device
                 const addModalButton = document.getElementById('add-modal');
                 addModalButton.dispatchEvent(new CustomEvent('click', { detail: false }));
-
                 // Set the name of the newly added device
                 const container = document.querySelector('.container .bg-white');
                 const deviceElement = container.lastElementChild;
                 deviceElement.querySelector('#location-name').value = device.name;
                 deviceElement.setAttribute('data-device-id', deviceId);
+
+                // Hide the save button for existing devices
+                const saveButton = deviceElement.querySelector('#save');
+                saveButton.classList.add('hidden');
 
                 getLastReplacementDate(deviceId)
                     .then(date => {
@@ -305,6 +336,11 @@
                         }
                     })
                     .catch(error => console.error(error));
+
+                // Add the event listener for the remove button
+                deviceElement.querySelector('.remove-modal').addEventListener('click', function () {
+                    removeDevice(deviceId);
+                });
             });
         }
 
@@ -330,88 +366,7 @@
                 return null;
             }
         }
-
-        async function updateRemoveDeviceList() {
-            const removeList = document.getElementById('remove-list');
-            removeList.innerHTML = '';
-
-            const devices = await fetchDevices(restaurantId);
-
-            devices.forEach(device => {
-                const deviceItem = document.createElement('div');
-                deviceItem.classList.add('flex', 'justify-between', 'items-center', 'mb-2');
-
-                const deviceName = document.createElement('span');
-                deviceName.textContent = device.name;
-                deviceItem.appendChild(deviceName);
-
-                const removeButton = document.createElement('button');
-                removeButton.classList.add('bg-red-500', 'text-white', 'px-4', 'py-2', 'rounded');
-                removeButton.textContent = 'Remove';
-                removeButton.addEventListener('click', async () => {
-                    await fetch(`https://api.restaurants.provocati.lt/api/devices/${device.id}/delete`, { method: 'GET' });
-
-                    await updateRemoveDeviceList();
-                });
-
-                deviceItem.appendChild(removeButton);
-                removeList.appendChild(deviceItem);
-            });
-
-            // Add this line to ensure the device list is properly updated after deleting the last element
-            return devices;
-        }
-
-        document.getElementById('remove-modal').addEventListener('click', function () {
-            const removeDeviceModal = document.getElementById('remove-device-modal');
-            removeDeviceModal.classList.remove('hidden');
-
-            // Populate the list of devices in the remove device modal
-            const removeDeviceList = document.getElementById('remove-device-list');
-            removeDeviceList.innerHTML = '';
-
-            const deviceElements = document.querySelectorAll('.space-y-6');
-            deviceElements.forEach((deviceElement, index) => {
-                const locationName = deviceElement.querySelector('#location-name').value;
-                const deviceId = deviceElement.getAttribute('data-device-id');
-
-                const listItem = document.createElement('li');
-                listItem.classList.add('flex', 'justify-between', 'items-center');
-
-                const deviceName = document.createElement('span');
-                deviceName.textContent = locationName;
-                listItem.appendChild(deviceName);
-
-                const removeButton = document.createElement('button');
-                removeButton.textContent = 'Remove';
-                removeButton.classList.add('bg-red-500', 'text-white', 'px-4', 'py-2', 'rounded');
-                removeButton.addEventListener('click', async () => {
-                    // Send a GET request to delete the device from the backend
-                    fetch(`https://api.restaurants.provocati.lt/api/devices/${deviceId}/delete`, {
-                        method: 'GET',
-                    })
-                        .then(response => {
-                            if (response.ok) {
-                                deviceElement.remove();
-                                listItem.remove();
-                            } else {
-                                throw new Error('Failed to delete device');
-                            }
-                        })
-                        .catch(error => console.error(error));
-                });
-                listItem.appendChild(removeButton);
-
-                removeDeviceList.appendChild(listItem);
-            });
-        });
-
-        // Function to close the remove device modal
-        document.getElementById('close-remove-modal').addEventListener('click', function () {
-            const removeDeviceModal = document.getElementById('remove-device-modal');
-            removeDeviceModal.classList.add('hidden');
-        });
-
+        
     </script>
 </body>
 
